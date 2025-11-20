@@ -1,0 +1,87 @@
+name: flutter_application_3
+description: A new Flutter project.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.1.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_staggered_grid_view: ^0.7.0
+  google_fonts: ^6.3.2
+  iconsax: ^0.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  assets:
+    - assets/images/grab.png
+    - assets/images/facebook.png
+    - assets/images/google.png
+    - assets/images/indonesia.png
+    - assets/images/calendar.png
+    - assets/images/greenloc.png
+    - assets/images/redloc.png
+    - assets/images/AB.png
+    - assets/images/JA.png
+    - assets/images/M6K.png
+    - assets/images/PK.png
+    - assets/images/SM.png
+    - assets/images/time.png
+    - assets/images/KM.png
+    - assets/images/motor.png
+    - assets/images/mobil.png
+    - assets/images/makanan.png
+    - assets/images/express.png
+    - assets/images/belanja.png
+    - assets/images/pulsa.png
+    - assets/images/dine.png
+    - assets/images/semua.png
+    - assets/images/kado.png
+    - assets/images/jastip.png
+    - assets/images/pinjaman.png
+    - assets/images/paketdiskon.png
+    - assets/images/kesehatan.png
+    - assets/images/superbank.png
+    - assets/images/sewa.png
+    - assets/images/hadiah.png
+    - assets/images/jadwalkan.png
+    - assets/images/peta.png
+    - assets/images/arrow.png
+    - assets/images/image1.png
+    - assets/images/image2.png
+    - assets/images/image3.png
+    - assets/images/scan.png
+    - assets/images/profile.png
+    - assets/images/home.png
+    - assets/images/pembayaran.png
+    - assets/images/aktivitas.png
+    - assets/images/kotakmasuk.png
+    - assets/images/homeg.png
+    - assets/images/aktivitasg.png
+    - assets/images/kotakmasukg.png
+    - assets/images/pembayarang.png
+    - assets/images/SB.png
+    - assets/images/image4.png
+    - assets/images/koper.png
+    - assets/images/family.png
+    - assets/images/unlimitedm.png
+    - assets/images/unlimited.png
+    - assets/images/motora.png
+    - assets/images/chat_support.png
+    - assets/images/bin.png
+    - assets/images/sym1.png
+    - assets/images/sym2.png
+    - assets/images/sym3.png
+    - assets/images/pbg.png
+    - assets/images/kartu.png
+    - assets/images/topup.png
+    - assets/images/topupw.png
+    - assets/images/scannerw.png
+    - assets/images/ovo_card.png
+  uses-material-design: true
