@@ -1,96 +1,157 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math' as math;
-import 'halaman2.dart'; // Import file halaman2
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+/* ===================== APP ROOT ===================== */
+
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _isDarkMode = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTheme();
+  }
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    _isDarkMode = prefs.getBool('isDarkMode') ?? true;
+    setState(() {});
+  }
+
+  Future<void> toggleTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    _isDarkMode = !_isDarkMode;
+    await prefs.setBool('isDarkMode', _isDarkMode);
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Claude',
-      theme: ThemeData(
-        brightness: Brightness.dark,
+      themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      home: LoginPage(
+        isDarkMode: _isDarkMode,
+        onToggleTheme: toggleTheme,
       ),
-      home: const ClaudeSplashScreen(),
     );
   }
 }
 
-class ClaudeSplashScreen extends StatelessWidget {
-  const ClaudeSplashScreen({Key? key}) : super(key: key);
+/* ===================== LOGIN PAGE ===================== */
+
+class LoginPage extends StatefulWidget {
+  final bool isDarkMode;
+  final VoidCallback onToggleTheme;
+
+  const LoginPage({
+    Key? key,
+    required this.isDarkMode,
+    required this.onToggleTheme,
+  }) : super(key: key);
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  void _login() {
+    if (usernameController.text.isNotEmpty &&
+        passwordController.text.isNotEmpty) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => HomePage(
+            username: usernameController.text,
+            password: passwordController.text,
+            isDarkMode: widget.isDarkMode,
+            onToggleTheme: widget.onToggleTheme,
+          ),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Set status bar to transparent
     SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
+      SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
+        statusBarIconBrightness:
+            widget.isDarkMode ? Brightness.light : Brightness.dark,
       ),
     );
 
     return Scaffold(
-      backgroundColor: const Color(0xFF2D2D2D),
-      body: GestureDetector(
-        onTap: () {
-          // Navigasi ke halaman2
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const Halaman2()),
-          );
-        },
+      body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Claude Logo
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Asterisk Icon
-                        CustomPaint(
-                          size: const Size(50, 50),
-                          painter: AsteriskPainter(),
-                        ),
-                        const SizedBox(width: 12),
-                        // Claude Text
-                        const Text(
-                          'Claude',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 52,
-                            fontWeight: FontWeight.w400,
-                            letterSpacing: -1,
-                            fontFamily: 'serif',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+            CustomPaint(
+              size: const Size(60, 60),
+              painter: AsteriskPainter(),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Claude',
+              style: TextStyle(
+                fontSize: 42,
+                fontFamily: 'serif',
+              ),
+            ),
+            const SizedBox(height: 32),
+
+            /// Username
+            SizedBox(
+              width: 260,
+              child: TextField(
+                controller: usernameController,
+                decoration: const InputDecoration(
+                  labelText: 'Username',
+                  border: OutlineInputBorder(),
                 ),
               ),
             ),
-            // Bottom text
-            Padding(
-              padding: const EdgeInsets.only(bottom: 80),
-              child: Text(
-                'BY ANTHROPIC',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 4,
+            const SizedBox(height: 16),
+
+            /// Password
+            SizedBox(
+              width: 260,
+              child: TextField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(),
                 ),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            SizedBox(
+              width: 260,
+              child: ElevatedButton(
+                onPressed: _login,
+                child: const Text('LOGIN'),
               ),
             ),
           ],
@@ -99,6 +160,62 @@ class ClaudeSplashScreen extends StatelessWidget {
     );
   }
 }
+
+/* ===================== HOME PAGE ===================== */
+
+class HomePage extends StatelessWidget {
+  final String username;
+  final String password;
+  final bool isDarkMode;
+  final VoidCallback onToggleTheme;
+
+  const HomePage({
+    Key? key,
+    required this.username,
+    required this.password,
+    required this.isDarkMode,
+    required this.onToggleTheme,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
+            onPressed: onToggleTheme,
+          ),
+        ],
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CustomPaint(
+              size: const Size(60, 60),
+              painter: AsteriskPainter(),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Claude',
+              style: TextStyle(
+                fontSize: 42,
+                fontFamily: 'serif',
+              ),
+            ),
+            const SizedBox(height: 32),
+            Text('username : $username'),
+            const SizedBox(height: 8),
+            Text('password : $password'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/* ===================== ASTERISK ===================== */
 
 class AsteriskPainter extends CustomPainter {
   @override
@@ -109,41 +226,27 @@ class AsteriskPainter extends CustomPainter {
 
     final center = Offset(size.width / 2, size.height / 2);
     final rayLength = size.width / 2;
-    final rayWidth = 4.0;
 
-    // Draw 8 rays in asterisk pattern
     for (int i = 0; i < 8; i++) {
-      final angle = (i * 45) * (3.14159 / 180);
-      
-      final path = Path();
-      
-      // Start from center
-      path.moveTo(center.dx, center.dy);
-      
-      // Calculate ray endpoint
+      final angle = (i * 45) * (math.pi / 180);
+      final path = Path()..moveTo(center.dx, center.dy);
+
       final endX = center.dx + rayLength * math.cos(angle);
       final endY = center.dy + rayLength * math.sin(angle);
-      
-      // Create tapered ray shape
-      final perpAngle = angle + 1.5708;
-      final halfWidth = rayWidth / 2;
-      
-      // Left side of ray
-      path.lineTo(
-        center.dx + halfWidth * math.cos(perpAngle),
-        center.dy + halfWidth * math.sin(perpAngle),
-      );
-      
-      // Tip of ray
-      path.lineTo(endX, endY);
-      
-      // Right side of ray
-      path.lineTo(
-        center.dx - halfWidth * math.cos(perpAngle),
-        center.dy - halfWidth * math.sin(perpAngle),
-      );
-      
-      path.close();
+      final perpAngle = angle + math.pi / 2;
+
+      path
+        ..lineTo(
+          center.dx + 2 * math.cos(perpAngle),
+          center.dy + 2 * math.sin(perpAngle),
+        )
+        ..lineTo(endX, endY)
+        ..lineTo(
+          center.dx - 2 * math.cos(perpAngle),
+          center.dy - 2 * math.sin(perpAngle),
+        )
+        ..close();
+
       canvas.drawPath(path, paint);
     }
   }
